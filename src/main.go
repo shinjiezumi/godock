@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"shinjiezumi.com/godock/chat"
 )
 
 func main() {
@@ -11,5 +12,6 @@ func main() {
 		fmt.Fprintf(w, "Hello!")
 	})
 
+	http.HandleFunc("/chat", chat.Main)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
