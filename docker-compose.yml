@@ -14,14 +14,13 @@ services:
         - ./src:/go/src
     tty:
       true
-    command: realize start
     environment:
       TZ: Asia/Tokyo
       DBMS: mysql
       USER: root
       PASS: root
       PROTOCOL: tcp(db:3306)
-      DBNAME: sample
+      DBNAME: godock
   db:
     build: docker/mysql
     ports:

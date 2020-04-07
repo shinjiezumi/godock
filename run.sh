@@ -1,0 +1,1 @@
+docker-compose exec go realize start
