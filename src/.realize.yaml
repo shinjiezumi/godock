@@ -3,22 +3,23 @@ settings:
     force: false
     interval: 0s
 schema:
-- name: src
-  path: .
-  commands:
-    install:
-      status: true
-      method: go build -o go
-    run:
-      status: true
-      method: ./go
-  watcher:
-    extensions:
-    - go
-    paths:
-    - /
-    ignore:
+  - name: src
+    path: .
+    commands:
+      install:
+        status: true
+        method: go build -o go
+      run:
+        status: true
+        method: ./go
+    watcher:
+      extensions:
+        - go
+        - html
       paths:
-      - .git
-      - .realize
-      - vendor
+        - /
+      ignore:
+        paths:
+          - .git
+          - .realize
+          - vendor

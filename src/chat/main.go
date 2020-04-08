@@ -1,16 +1,21 @@
 package chat
 
-import "net/http"
+import (
+	"net/http"
+	"path/filepath"
+	"sync"
+	"text/template"
+)
 
-func Main(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(`
-<html>
-    <head>
-        <title>チャット</title>
-    </head>
-    <body>
-        チャットしましょう!
-    </body>
-</html>
-		`))
+type TemplateHandler struct {
+	Once     sync.Once
+	Filename string
+	Templ    *template.Template
+}
+
+func (t *TemplateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	t.Once.Do(func() {
+		t.Templ = template.Must(template.ParseFiles(filepath.Join("./chat/templates", t.Filename)))
+	})
+	t.Templ.Execute(w, r)
 }
