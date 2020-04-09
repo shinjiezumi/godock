@@ -5,19 +5,21 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"shinjiezumi.com/godock/chat"
 )
 
 func main() {
 	var addr = flag.String("addr", ":8080", "アプリケーションのアドレス")
 	flag.Parse()
-	log.Println(*addr)
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello!")
 	})
 
 	http.Handle("/chat", &chat.TemplateHandler{Filename: "chat.html"})
 	r := chat.NewRoom()
+	// SetTracerで出力先を指定するとログが出力される。
+	chat.SetTracer(r, os.Stdout)
 	http.Handle("/chat/room", r)
 	// チャットルームを開始
 	go r.Run()
