@@ -7,11 +7,21 @@ import (
 	"net/http"
 	"os"
 	"shinjiezumi.com/godock/chat"
+
+	"github.com/stretchr/gomniauth"
+	"github.com/stretchr/gomniauth/providers/google"
 )
 
 func main() {
 	var addr = flag.String("addr", ":8080", "アプリケーションのアドレス")
 	flag.Parse()
+	gomniauth.SetSecurityKey(os.Getenv("OAUTH_CRYPT_KEY"))
+	googleClientId := os.Getenv("OAUTH_CLIENT_ID_GOOGLE")
+	googleSecret := os.Getenv("OAUTH_CLIENT_SECRET_GOOGLE")
+	gomniauth.WithProviders(
+		google.New(googleClientId, googleSecret, "http://localhost:8080/auth/callback/google"),
+	)
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
 			w.WriteHeader(http.StatusNotFound)

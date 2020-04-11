@@ -14,6 +14,7 @@ services:
         - ./src:/go/src
     tty:
       true
+    env_file: src/.env
     environment:
       TZ: Asia/Tokyo
       DBMS: mysql

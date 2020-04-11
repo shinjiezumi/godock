@@ -1,5 +1,4 @@
 docker/mysql/data
 logs
-/src/go
 
 .idea
