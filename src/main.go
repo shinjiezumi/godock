@@ -34,6 +34,17 @@ func main() {
 	http.Handle("/login", &chat.TemplateHandler{Filename: "login.html"})
 	http.HandleFunc("/auth/", chat.LoginHandler)
 
+	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
+		http.SetCookie(w, &http.Cookie{
+			Name:   "auth",
+			Value:  "",
+			Path:   "/",
+			MaxAge: -1,
+		})
+		w.Header()["Location"] = []string{"/chat"}
+		w.WriteHeader(http.StatusTemporaryRedirect)
+	})
+
 	// MustAuthヘルパーでラップすると認証必須なページとすることが出来る
 	http.Handle("/chat", chat.MustAuth(&chat.TemplateHandler{Filename: "chat.html"}))
 	r := chat.NewRoom()
