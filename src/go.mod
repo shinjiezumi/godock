@@ -1,4 +1,4 @@
-module shinjiezumi.com/godock
+module godock
 
 go 1.13
 
@@ -10,6 +10,7 @@ require (
 	github.com/stretchr/objx v0.2.0
 	github.com/stretchr/signature v0.0.0-20160104132143-168b2a1e1b56 // indirect
 	github.com/stretchr/stew v0.0.0-20130812190256-80ef0842b48b // indirect
+	github.com/stretchr/testify v1.3.0
 	github.com/stretchr/tracer v0.0.0-20140124184152-66d3696bba97 // indirect
 	github.com/ugorji/go v1.1.7 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect

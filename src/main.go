@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"godock/chat"
 	"log"
 	"net/http"
 	"os"
-	"shinjiezumi.com/godock/chat"
 
 	"github.com/stretchr/gomniauth"
 	"github.com/stretchr/gomniauth/providers/google"
@@ -47,7 +47,7 @@ func main() {
 
 	// MustAuthヘルパーでラップすると認証必須なページとすることが出来る
 	http.Handle("/chat", chat.MustAuth(&chat.TemplateHandler{Filename: "chat.html"}))
-	r := chat.NewRoom()
+	r := chat.NewRoom(chat.UseGravatar)
 	// SetTracerで出力先を指定するとログが出力される。
 	chat.SetTracer(r, os.Stdout)
 	http.Handle("/chat/room", r)

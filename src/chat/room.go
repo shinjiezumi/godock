@@ -3,10 +3,10 @@ package chat
 import (
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/objx"
+	"godock/trace"
 	"io"
 	"log"
 	"net/http"
-	"shinjiezumi.com/godock/trace"
 )
 
 type room struct {
@@ -20,6 +20,8 @@ type room struct {
 	clients map[*client]bool
 	// チャットルーム上で行われた操作のログを受け取る
 	tracer trace.Tracer
+	// avatarはアバターの情報を取得します
+	avatar Avatar
 }
 
 func (r *room) Run() {
@@ -84,13 +86,14 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	client.read()
 }
 
-func NewRoom() *room {
+func NewRoom(avatar Avatar) *room {
 	return &room{
 		forward: make(chan *message),
 		join:    make(chan *client),
 		leave:   make(chan *client),
 		clients: make(map[*client]bool),
 		tracer:  trace.Off(),
+		avatar:  avatar,
 	}
 }
 
