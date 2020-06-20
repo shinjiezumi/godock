@@ -22,13 +22,10 @@ func main() {
 		google.New(googleClientId, googleSecret, "http://localhost:8080/auth/callback/google"),
 	)
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/" {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte("Page not found"))
-			return
-		}
-		fmt.Fprintf(w, "Hello!")
+	http.Handle("/", &chat.TemplateHandler{Filename: "index.html"})
+
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "ok")
 	})
 
 	http.Handle("/login", &chat.TemplateHandler{Filename: "login.html"})
@@ -47,10 +44,20 @@ func main() {
 
 	// MustAuthヘルパーでラップすると認証必須なページとすることが出来る
 	http.Handle("/chat", chat.MustAuth(&chat.TemplateHandler{Filename: "chat.html"}))
-	r := chat.NewRoom(chat.UseGravatar)
+
+	//r := chat.NewRoom(chat.UseAuthAvatar) // OAuthのアバター
+	//r := chat.NewRoom(chat.UseGravatar) // Gravatar
+	r := chat.NewRoom(chat.UserFileSystemAvatar) // アップロードしたアバター
+
 	// SetTracerで出力先を指定するとログが出力される。
 	chat.SetTracer(r, os.Stdout)
 	http.Handle("/chat/room", r)
+
+	// アップロードフォーム
+	http.Handle("/upload", &chat.TemplateHandler{Filename: "upload.html"})
+	http.HandleFunc("/uploader", chat.UploaderHandler)
+
+	http.Handle("/avatars/", http.StripPrefix("/avatars/", http.FileServer(http.Dir("./chat/avatars"))))
 
 	// チャットルームを開始
 	go r.Run()

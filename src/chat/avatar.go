@@ -1,11 +1,10 @@
 package chat
 
 import (
-	"crypto/md5"
 	"errors"
 	"fmt"
-	"io"
-	"strings"
+	"io/ioutil"
+	"path/filepath"
 )
 
 var ErrNoAvatarURL = errors.New("chat: アバターのURLを取得できません")
@@ -32,11 +31,31 @@ type GravatarAvatar struct{}
 var UseGravatar GravatarAvatar
 
 func (_ GravatarAvatar) GetAvatarURL(c *client) (string, error) {
-	if email, ok := c.userData["email"]; ok {
-		if emailStr, ok := email.(string); ok {
-			m := md5.New()
-			io.WriteString(m, strings.ToLower(emailStr))
-			return fmt.Sprintf("//www.gravatar.com/avatar/%x", m.Sum(nil)), nil
+	if userID, ok := c.userData["user_id"]; ok {
+		if userIDStr, ok := userID.(string); ok {
+			return fmt.Sprintf("//www.gravatar.com/avatar/%s", userIDStr), nil
+		}
+	}
+	return "", ErrNoAvatarURL
+}
+
+type FileSystemAvatar struct{}
+
+var UserFileSystemAvatar FileSystemAvatar
+
+func (_ FileSystemAvatar) GetAvatarURL(c *client) (string, error) {
+	if userID, ok := c.userData["user_id"]; ok {
+		if userIDStr, ok := userID.(string); ok {
+			if files, err := ioutil.ReadDir("chat/avatars"); err == nil {
+				for _, file := range files {
+					if file.IsDir() {
+						continue
+					}
+					if match, _ := filepath.Match(userIDStr+"*", file.Name()); match {
+						return "/avatars/" + file.Name(), nil
+					}
+				}
+			}
 		}
 	}
 	return "", ErrNoAvatarURL
